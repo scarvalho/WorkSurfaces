@@ -1,0 +1,8 @@
+﻿<Window x:Class="WorkSurfaces.WorkItemWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="WorkItemWindow" Height="300" Width="300" WindowStyle="SingleBorderWindow" SizeToContent="WidthAndHeight">
+    <StackPanel Name="ContentStackPanel">
+        
+    </StackPanel>
+</Window>
