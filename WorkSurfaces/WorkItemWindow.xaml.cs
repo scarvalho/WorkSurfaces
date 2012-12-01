@@ -39,7 +39,7 @@ namespace WorkSurfaces
             InitializeComponent();
             if (wi is ImageItem)
             {
-                SetContent(Type.Image, ((ImageItem)wi).FileName);
+                SetContent(Type.Image, ((ImageItem)wi).Filename);
             }
             else if (wi is NoteItem)
             {

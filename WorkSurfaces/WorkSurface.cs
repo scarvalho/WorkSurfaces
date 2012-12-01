@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
-using System.Xml.Schema;
 
 namespace WorkSurfaces
 {
-    public class WorkSurface : IXmlSerializable
+    [Serializable()]
+    public class WorkSurface
     {
-        //List Objects
-        public LinkedList<WorkWindow> windows;
-        public Area area;
+        //List Objects        
+        LinkedList<WorkWindow> windows;
+        Area area;
+
         public struct WorkWindow
         {
             public WorkItem data;
@@ -24,18 +24,40 @@ namespace WorkSurfaces
                 window = w;
             }
         }
+        
         public struct Area
         {
             int x;
             int y;
             int width;
             int height;
+
             public Area(int x, int y, int width, int height)
             {
                 this.x = x;
                 this.y = y;
                 this.width = width;
                 this.height = height;
+            }
+            public int X
+            {
+                get { return x; }
+                set { x = value; }
+            }
+            public int Y
+            {
+                get { return y; }
+                set { y = value; }
+            }
+            public int Width
+            {
+                get { return width; }
+                set { width = value; }
+            }
+            public int Height
+            {
+                get { return height; }
+                set { height = value; }
             }
 
         }
@@ -61,38 +83,42 @@ namespace WorkSurfaces
         private void OnDocumentRecognized()
         {
         }
-        public void SaveToFile()
-        {
+        public XmlElement SerializeToXML(XmlDocument doc)
+        {          
+            //Create Root
+            XmlElement root = doc.CreateElement("WorkSurface");
 
-          XmlSerializer serializer = new XmlSerializer(typeof(WorkSurface));
-          TextWriter textWriter = new StreamWriter(@"C:\temp\workSurface.xml");
-          serializer.Serialize(textWriter, this);
-          textWriter.Close();
+            //Add area
+            XmlElement areaEl = doc.CreateElement("Area");
+            areaEl.SetAttribute("x", this.area.X.ToString());
+            areaEl.SetAttribute("y", this.area.Y.ToString());
+            areaEl.SetAttribute("width", this.area.Width.ToString());
+            areaEl.SetAttribute("height", this.area.Height.ToString());
+            root.AppendChild(areaEl);
+
+            XmlElement windowsEl = doc.CreateElement("Windows");
+            foreach (WorkWindow ww in windows)
+            {
+                XmlElement windowEl = doc.CreateElement("WorkWindow");
+                XmlElement areaEl2 = doc.CreateElement("Area");
+                areaEl2.SetAttribute("x", ww.window.Left.ToString());
+                areaEl2.SetAttribute("y", ww.window.Top.ToString());
+                areaEl2.SetAttribute("width", ww.window.ActualWidth.ToString());
+                areaEl2.SetAttribute("height", ww.window.ActualHeight.ToString());
+                windowEl.AppendChild(areaEl2);
+
+                XmlElement wi = ww.data.SerializeToXML(doc);
+                windowEl.AppendChild(wi);
+
+                windowsEl.AppendChild(windowEl);
+            }
+            root.AppendChild(windowsEl);
+            return root;
 
         }
         public void LoadFromFile()
         {
         }
 
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        public void ReadXml(XmlReader reader)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            writer.WriteStartElement("Windows");
-            foreach (var item in windows)
-            {
-                //XmlSerializer serializer = new XmlSerializer(typeof(WorkSurface));
-                writer.WriteElementString("Item", item.window.Width.ToString());
-            }
-            writer.WriteEndElement();
-        }
     }
 }
