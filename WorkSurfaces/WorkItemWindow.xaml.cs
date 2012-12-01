@@ -65,19 +65,28 @@ namespace WorkSurfaces
         {
             // Create Image Element
             Image myImage = new Image();           
-
+            
             // Create source
             BitmapImage myBitmapImage = new BitmapImage();
 
-            // BitmapImage.UriSource must be in a BeginInit/EndInit block
-            myBitmapImage.BeginInit();
-            myBitmapImage.UriSource = new Uri(FileName);
-            myBitmapImage.EndInit();
-
-            //set image source
-            myImage.Source = myBitmapImage;
-            myImage.Width = myBitmapImage.PixelWidth;
-            myImage.Height = myBitmapImage.PixelHeight;
+            if (System.IO.File.Exists(FileName))
+            {
+                // BitmapImage.UriSource must be in a BeginInit/EndInit block
+                try
+                {
+                    myBitmapImage.BeginInit();
+                    myBitmapImage.UriSource = new Uri(FileName);
+                    myBitmapImage.EndInit();
+                }
+                catch (System.InvalidOperationException ex)
+                {
+                    Console.WriteLine("File not found");
+                }
+                //set image source
+                myImage.Source = myBitmapImage;
+                myImage.Width = myBitmapImage.PixelWidth;
+                myImage.Height = myBitmapImage.PixelHeight;
+            }
 
             return myImage;
         }
@@ -90,6 +99,23 @@ namespace WorkSurfaces
             myText.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
             return myText;
         }
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            this.WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            this.WindowStyle = System.Windows.WindowStyle.None;
+        }
+
         
     }
 }

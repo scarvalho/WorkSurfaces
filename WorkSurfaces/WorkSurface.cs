@@ -7,60 +7,14 @@ using System.Xml;
 
 namespace WorkSurfaces
 {
-    [Serializable()]
     public class WorkSurface
     {
         //List Objects        
         LinkedList<WorkWindow> windows;
+        string documentTrigger = "";
+        Boolean isVisible = false;
         Area area;
 
-        public struct WorkWindow
-        {
-            public WorkItem data;
-            public WorkItemWindow window;
-            public WorkWindow(WorkItem d, WorkItemWindow w)
-            {
-                data = d;
-                window = w;
-            }
-        }
-        
-        public struct Area
-        {
-            int x;
-            int y;
-            int width;
-            int height;
-
-            public Area(int x, int y, int width, int height)
-            {
-                this.x = x;
-                this.y = y;
-                this.width = width;
-                this.height = height;
-            }
-            public int X
-            {
-                get { return x; }
-                set { x = value; }
-            }
-            public int Y
-            {
-                get { return y; }
-                set { y = value; }
-            }
-            public int Width
-            {
-                get { return width; }
-                set { width = value; }
-            }
-            public int Height
-            {
-                get { return height; }
-                set { height = value; }
-            }
-
-        }
         public WorkSurface()
         {
             windows = new LinkedList<WorkWindow>();
@@ -74,15 +28,49 @@ namespace WorkSurfaces
         {
             WorkItemWindow newWindow = new WorkItemWindow(wi);
             WorkWindow newWorkWindow= new WorkWindow(wi, newWindow);
-            newWindow.Show();
+            
             windows.AddLast(newWorkWindow);
+            if (isVisible == true)
+                newWindow.Show();
+
+        }
+
+        /* Constructor that allows positioning of item */
+        public void AddItem(WorkItem wi, int x, int y)
+        {
+            WorkItemWindow newWindow = new WorkItemWindow(wi);
+            WorkWindow newWorkWindow = new WorkWindow(wi, newWindow);
+
+            newWorkWindow.window.Left = x;
+            newWorkWindow.window.Top  = y;
+
+            windows.AddLast(newWorkWindow);
+            if (isVisible == true)
+                newWindow.Show();
+
         }
         public void RemoveItem()
         {
         }
-        private void OnDocumentRecognized()
+
+        public void Load()
         {
+            foreach (WorkWindow wi in windows)
+            {
+                wi.window.Show();
+            }
+            isVisible = true;
         }
+
+        public void Unload()
+        {
+            foreach (WorkWindow wi in windows)
+            {
+                wi.window.Hide();
+            }
+            isVisible = false;
+        }
+
         public XmlElement SerializeToXML(XmlDocument doc)
         {          
             //Create Root
@@ -118,6 +106,53 @@ namespace WorkSurfaces
         }
         public void LoadFromFile()
         {
+        }
+        public struct WorkWindow
+        {
+            public WorkItem data;           //Virtual work item
+            public WorkItemWindow window;
+            public WorkWindow(WorkItem d, WorkItemWindow w)
+            {
+                data = d;
+                window = w;
+            }
+        }
+
+        public struct Area
+        {
+            int x;
+            int y;
+            int width;
+            int height;
+
+            public Area(int x, int y, int width, int height)
+            {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+            }
+            public int X
+            {
+                get { return x; }
+                set { x = value; }
+            }
+            public int Y
+            {
+                get { return y; }
+                set { y = value; }
+            }
+            public int Width
+            {
+                get { return width; }
+                set { width = value; }
+            }
+            public int Height
+            {
+                get { return height; }
+                set { height = value; }
+            }
+
         }
 
     }
